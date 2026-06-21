@@ -14,15 +14,15 @@ export default function BudgetProgress({ budget, spent, onEdit, onDelete }) {
   const barWidth  = Math.min(pct, 100)
 
   return (
-    <div className="card" style={{ padding: '16px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ fontWeight: 600, fontSize: 14 }}>
+    <div className="card" style={{ padding: '14px 18px' }}>
+      <div className="budget-card-top">
+        <div style={{ fontWeight: 600, fontSize: 14, minWidth: 0 }}>
           {budget.category.charAt(0).toUpperCase() + budget.category.slice(1)}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="budget-card-controls">
           <span style={{
             fontSize: 11, fontWeight: 700, padding: '2px 8px',
-            borderRadius: 20, background: lv.bg, color: lv.color,
+            borderRadius: 20, background: lv.bg, color: lv.color, whiteSpace: 'nowrap',
           }}>
             {lv.emoji} {lv.label}
           </span>
@@ -40,14 +40,14 @@ export default function BudgetProgress({ budget, spent, onEdit, onDelete }) {
         }} />
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B7280' }}>
+      <div className="budget-card-amounts">
         <span>{formatCurrency(spent)} terpakai</span>
         <span style={{ fontWeight: 600, color: lv.color }}>
-          {Math.round(pct)}% — sisa {formatCurrency(remaining)}
+          {Math.round(pct)}% · sisa {formatCurrency(remaining)}
         </span>
       </div>
       <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>
-        Limit bulan ini: {formatCurrency(budget.amount)}
+        Limit: {formatCurrency(budget.amount)}
       </div>
     </div>
   )

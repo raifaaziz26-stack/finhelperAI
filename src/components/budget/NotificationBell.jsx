@@ -122,21 +122,7 @@ export default function NotificationBell({ userId }) {
 
       {/* Dropdown panel */}
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 6px)',
-          right: 0,
-          width: 320,
-          maxHeight: 440,
-          background: '#fff',
-          border: '1px solid #E5E7EB',
-          borderRadius: 12,
-          boxShadow: '0 8px 30px rgba(0,0,0,0.13)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}>
+        <div className="notif-panel">
           {/* Header */}
           <div style={{
             padding: '12px 16px',
