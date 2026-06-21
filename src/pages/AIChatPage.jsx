@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 
 const SUGGESTIONS = [
@@ -55,7 +54,7 @@ export default function AIChatPage() {
   }
 
   return (
-    <Layout>
+    <>
       <div className="page-header">
         <h1 className="page-title">FinHelper GPT 🤖</h1>
         <p className="page-subtitle">Tanyakan apa saja tentang keuangan Anda</p>
@@ -111,6 +110,6 @@ export default function AIChatPage() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { getSummary, getTransactions } from '../services/transactions.service'
 import { getExpenseBreakdown } from '../services/analytics.service'
@@ -57,7 +56,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <Layout>
+    <>
       {/* Header */}
       <div className="page-header-row">
         <div>
@@ -180,6 +179,6 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

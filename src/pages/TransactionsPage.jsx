@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { useToast } from '../components/common/Toast'
 import { getTransactions, addTransaction, bulkAddTransactions, deleteTransaction, deleteAllTransactions, logImportHistory } from '../services/transactions.service'
@@ -138,7 +137,7 @@ export default function TransactionsPage() {
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
 
   return (
-    <Layout>
+    <>
       <div className="page-header-row">
         <div>
           <h1 className="page-title">Transaksi</h1>
@@ -349,6 +348,6 @@ export default function TransactionsPage() {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   )
 }

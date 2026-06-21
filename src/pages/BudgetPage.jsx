@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { useToast } from '../components/common/Toast'
 import BudgetProgress from '../components/budget/BudgetProgress'
@@ -148,7 +147,7 @@ export default function BudgetPage() {
   const unreadCount = alerts.filter(a => !a.read_at).length
 
   return (
-    <Layout>
+    <>
       <div className="page-header-row">
         <div>
           <h1 className="page-title">Budget</h1>
@@ -231,6 +230,6 @@ export default function BudgetPage() {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   )
 }

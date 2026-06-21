@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { useToast } from '../components/common/Toast'
 import { getProfile, updateProfile } from '../services/auth.service'
@@ -35,7 +34,7 @@ export default function ProfilePage() {
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 
   return (
-    <Layout>
+    <>
       <div className="page-header">
         <h1 className="page-title">Profil Saya</h1>
         <p className="page-subtitle">Kelola informasi akun Anda</p>
@@ -103,6 +102,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

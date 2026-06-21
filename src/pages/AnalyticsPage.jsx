@@ -3,7 +3,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line,
 } from 'recharts'
-import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { getMonthlyData, getExpenseBreakdown, getBalanceTrend } from '../services/analytics.service'
 import { formatCurrency } from '../utils/formatCurrency'
@@ -53,11 +52,11 @@ export default function AnalyticsPage() {
 
   const totalExpense = breakdown.reduce((s, d) => s + d.value, 0)
 
-  if (loading) return <Layout><div className="loading-page"><div className="spinner" /></div></Layout>
+  if (loading) return <div className="loading-page"><div className="spinner" /></div>
 
   if (monthly.length === 0) {
     return (
-      <Layout>
+      <>
         <div className="page-header">
           <h1 className="page-title">Analisis Pengeluaran</h1>
         </div>
@@ -66,12 +65,12 @@ export default function AnalyticsPage() {
           <p className="empty-state-title">Belum ada data transaksi</p>
           <p className="empty-state-desc">Tambahkan transaksi untuk melihat analisis keuangan Anda</p>
         </div>
-      </Layout>
+      </>
     )
   }
 
   return (
-    <Layout>
+    <>
       <div className="page-header">
         <h1 className="page-title">Analisis Pengeluaran</h1>
         <p className="page-subtitle">Visualisasi pola keuangan Anda</p>
@@ -149,6 +148,6 @@ export default function AnalyticsPage() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   )
 }
