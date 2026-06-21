@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import Layout from '../components/common/Layout'
 import { useAuth } from '../store/AuthContext'
 import { useToast } from '../components/common/Toast'
-import { getTransactions, addTransaction, deleteTransaction } from '../services/transactions.service'
+import { getTransactions, addTransaction, bulkAddTransactions, deleteTransaction, deleteAllTransactions, logImportHistory } from '../services/transactions.service'
+import { checkBudgetAlerts } from '../services/budget.service'
+import ImportMutasiModal from '../components/common/ImportMutasiModal'
 import { formatCurrency, formatDate } from '../utils/formatCurrency'
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, getCategoryById } from '../constants/categories'
 
@@ -21,6 +23,10 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [showModal, setShowModal] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [showDeleteAll, setShowDeleteAll] = useState(false)
+  const [deletingAll, setDeletingAll] = useState(false)
+  const [importing, setImporting] = useState(false)
   const [form, setForm] = useState(defaultForm)
   const [submitting, setSubmitting] = useState(false)
 
@@ -64,10 +70,59 @@ export default function TransactionsPage() {
       setForm(defaultForm)
       showToast('Transaksi berhasil disimpan!')
       load()
+      // Fire-and-forget: check if this expense crossed a budget threshold
+      checkBudgetAlerts(user.id, form.category, form.type)
     } catch (err) {
       showToast(err.message, 'error')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function handleImport(rows, meta) {
+    setImporting(true)
+    try {
+      const payload = rows.map(r => ({
+        user_id: user.id,
+        type: r.type,
+        amount: r.amount,
+        category: r.category,
+        description: r.description,
+        date: r.date,
+        source: r.source || 'manual',
+        reference: r.reference || null,
+        original_data: r.original_data || null,
+      }))
+      await bulkAddTransactions(payload)
+      if (meta) {
+        await logImportHistory(user.id, {
+          bank: meta.bank,
+          fileName: meta.fileName,
+          totalRows: meta.totalParsed,
+          importedRows: rows.length,
+        }).catch(() => {})  // non-fatal: don't fail the import if history log fails
+      }
+      setShowImport(false)
+      showToast(`${rows.length} transaksi berhasil diimport!`)
+      load()
+    } catch (err) {
+      showToast(err.message, 'error')
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  async function handleDeleteAll() {
+    setDeletingAll(true)
+    try {
+      await deleteAllTransactions(user.id)
+      setShowDeleteAll(false)
+      showToast('Semua transaksi berhasil dihapus.', 'info')
+      load()
+    } catch (err) {
+      showToast(err.message, 'error')
+    } finally {
+      setDeletingAll(false)
     }
   }
 
@@ -89,7 +144,13 @@ export default function TransactionsPage() {
           <h1 className="page-title">Transaksi</h1>
           <p className="page-subtitle">Kelola semua pemasukan dan pengeluaran Anda</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Catat Transaksi</button>
+        <div className="flex gap-2">
+          {transactions.length > 0 && (
+            <button className="btn btn-danger" onClick={() => setShowDeleteAll(true)}>🗑 Hapus Semua</button>
+          )}
+          <button className="btn btn-secondary" onClick={() => setShowImport(true)}>📤 Import Mutasi</button>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Catat Transaksi</button>
+        </div>
       </div>
 
       {/* Summary row */}
@@ -179,6 +240,38 @@ export default function TransactionsPage() {
           </div>
         )}
       </div>
+
+      {showDeleteAll && (
+        <div className="modal-overlay" onClick={() => setShowDeleteAll(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">🗑 Hapus Semua Transaksi</h3>
+              <button className="modal-close" onClick={() => setShowDeleteAll(false)}>×</button>
+            </div>
+            <p style={{ color: '#374151', marginBottom: 8 }}>
+              Kamu akan menghapus <strong>{transactions.length} transaksi</strong> secara permanen.
+            </p>
+            <p style={{ fontSize: 13, color: '#EF4444', marginBottom: 24 }}>
+              ⚠ Tindakan ini tidak bisa dibatalkan.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button className="btn btn-secondary" onClick={() => setShowDeleteAll(false)}>
+                Batal
+              </button>
+              <button className="btn btn-danger" onClick={handleDeleteAll} disabled={deletingAll}>
+                {deletingAll ? 'Menghapus...' : `Ya, Hapus ${transactions.length} Transaksi`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showImport && (
+        <ImportMutasiModal
+          onClose={() => setShowImport(false)}
+          onImport={handleImport}
+        />
+      )}
 
       {/* Modal */}
       {showModal && (
